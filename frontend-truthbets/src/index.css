@@ -620,6 +620,34 @@ textarea[aria-invalid="true"]:focus {
   padding: 13px 30px;
 }
 
+/* ---------------------------------------------------------------- filter pills */
+.filter-pills {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 26px;
+}
+
+.filter-pills button {
+  padding: 7px 16px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  color: var(--muted);
+}
+
+.filter-pills button:hover {
+  color: var(--text);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.filter-pills button.active {
+  background: var(--lime);
+  border-color: var(--lime);
+  color: #14160c;
+  font-weight: 700;
+}
+
 /* ---------------------------------------------------------------- cards */
 .grid {
   display: grid;

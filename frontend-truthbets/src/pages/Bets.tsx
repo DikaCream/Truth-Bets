@@ -4,6 +4,9 @@ import { useTruthBets } from "../context/TruthBetsContext";
 import type { Bet, Config } from "../lib/types";
 
 const POLL_MS = 10000;
+// Terminal statuses have no further actions; OPEN + LOCKED are the live market.
+const ACTIVE_STATUSES = new Set(["OPEN", "LOCKED"]);
+type Filter = "active" | "all";
 
 export default function Bets() {
   const { wallet, contract } = useTruthBets();
@@ -14,6 +17,7 @@ export default function Bets() {
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<number | null>(null);
   const [now, setNow] = useState(() => Math.floor(Date.now() / 1000));
+  const [filter, setFilter] = useState<Filter>("active");
 
   const refresh = useCallback(async () => {
     try {
@@ -81,6 +85,13 @@ export default function Bets() {
   const myBetIds = useMemo(() => new Set(myBets.map((b) => b.id)), [myBets]);
   const otherBets = bets.filter((b) => !myBetIds.has(b.id));
 
+  const applyFilter = useCallback(
+    (list: Bet[]) => (filter === "active" ? list.filter((b) => ACTIVE_STATUSES.has(b.status)) : list),
+    [filter],
+  );
+  const visibleMy = useMemo(() => applyFilter(myBets), [applyFilter, myBets]);
+  const visibleOther = useMemo(() => applyFilter(otherBets), [applyFilter, otherBets]);
+
   return (
     <div className="page container">
       <div className="page-head">
@@ -101,7 +112,7 @@ export default function Bets() {
             <div className="stat-label">Total bets</div>
           </div>
           <div className="stat">
-            <div className="stat-value">
+            <div className="stat-value amber">
               {config.escrow_locked === 0n
                 ? "0"
                 : config.escrow_locked.toString().slice(0, 8)}
@@ -111,19 +122,36 @@ export default function Bets() {
         </div>
       )}
 
+      <div className="filter-pills" role="group" aria-label="Filter bets">
+        <button
+          className={filter === "active" ? "active" : ""}
+          aria-pressed={filter === "active"}
+          onClick={() => setFilter("active")}
+        >
+          Active
+        </button>
+        <button
+          className={filter === "all" ? "active" : ""}
+          aria-pressed={filter === "all"}
+          onClick={() => setFilter("all")}
+        >
+          All
+        </button>
+      </div>
+
       {loading ? (
         <div className="page-loading" role="status">
           <span className="spinner" aria-hidden="true" /> Loading bets…
         </div>
       ) : (
         <>
-          {myBets.length > 0 && (
+          {visibleMy.length > 0 && (
             <section style={{ marginBottom: 34 }}>
               <h2 className="section-title">
-                Your bets <span className="accent">({myBets.length})</span>
+                Your bets <span className="accent">({visibleMy.length})</span>
               </h2>
               <div className="grid">
-                {myBets.map((bet) => (
+                {visibleMy.map((bet) => (
                   <BetCard
                     key={bet.id}
                     bet={bet}
@@ -138,18 +166,30 @@ export default function Bets() {
           )}
 
           <h2 className="section-title">
-            All bets <span className="accent">({bets.length})</span>
+            All bets{" "}
+            <span className="accent">
+              ({filter === "active" ? visibleOther.length : otherBets.length})
+            </span>
           </h2>
-          {bets.length === 0 ? (
+          {otherBets.length === 0 ? (
             <div className="empty">
               <p>No bets yet.</p>
               <p>
                 <a href="/create">Create the first one →</a>
               </p>
             </div>
+          ) : visibleOther.length === 0 ? (
+            <div className="empty">
+              <p>No active bets right now.</p>
+              <p>
+                <button className="ghost" onClick={() => setFilter("all")}>
+                  Show all (including closed) →
+                </button>
+              </p>
+            </div>
           ) : (
             <div className="grid">
-              {otherBets.map((bet) => (
+              {visibleOther.map((bet) => (
                 <BetCard
                   key={bet.id}
                   bet={bet}

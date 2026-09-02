@@ -1,125 +1,219 @@
-/* Truth Bets specific styles — layered on top of the shared design system. */
+/* ================================================================
+   Truth Bets — bet-specific styles: the betting slip.
+   ================================================================ */
 
 /* ---------------------------------------------------------------- status badges */
 .badge.status-open {
   color: var(--warn);
-  border-color: rgba(251, 191, 36, 0.45);
-  background: rgba(251, 191, 36, 0.08);
+  border-color: rgba(255, 178, 36, 0.55);
+  background: rgba(255, 178, 36, 0.08);
 }
 
 .badge.status-locked {
-  color: var(--accent);
-  border-color: rgba(34, 211, 238, 0.45);
-  background: rgba(34, 211, 238, 0.08);
+  color: var(--cyan);
+  border-color: rgba(76, 201, 240, 0.5);
+  background: rgba(76, 201, 240, 0.08);
 }
 
 .badge.status-resolved {
   color: var(--green);
-  border-color: rgba(52, 211, 153, 0.5);
-  background: rgba(52, 211, 153, 0.1);
+  border-color: rgba(47, 191, 113, 0.55);
+  background: rgba(47, 191, 113, 0.09);
 }
 
 .badge.status-refunded,
 .badge.status-cancelled {
   color: var(--muted);
-  border-color: var(--border-soft);
+  border-color: var(--border-strong);
   background: rgba(255, 255, 255, 0.03);
 }
 
 /* ---------------------------------------------------------------- verdict badges */
 .badge.verdict-true {
   color: var(--green);
-  border-color: rgba(52, 211, 153, 0.5);
-  background: rgba(52, 211, 153, 0.1);
-  font-weight: 800;
+  border-color: rgba(47, 191, 113, 0.55);
+  background: rgba(47, 191, 113, 0.09);
+  font-weight: 700;
 }
 
 .badge.verdict-false {
-  color: var(--magenta);
-  border-color: rgba(232, 121, 249, 0.45);
-  background: rgba(232, 121, 249, 0.08);
-  font-weight: 800;
+  color: var(--red);
+  border-color: rgba(255, 87, 87, 0.55);
+  background: rgba(255, 87, 87, 0.08);
+  font-weight: 700;
 }
 
 .badge.verdict-unclear {
   color: var(--warn);
-  border-color: rgba(251, 191, 36, 0.45);
-  background: rgba(251, 191, 36, 0.08);
-  font-weight: 800;
+  border-color: rgba(255, 178, 36, 0.55);
+  background: rgba(255, 178, 36, 0.08);
+  font-weight: 700;
 }
 
 /* ---------------------------------------------------------------- side chips */
 .side-chip {
   display: inline-block;
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: 0.66rem;
   font-weight: 700;
   letter-spacing: 0.1em;
   padding: 2px 9px;
-  border-radius: 999px;
+  border-radius: 6px;
   border: 1px solid;
 }
 
 .side-chip.side-true {
   color: var(--green);
-  border-color: rgba(52, 211, 153, 0.5);
-  background: rgba(52, 211, 153, 0.08);
+  border-color: rgba(47, 191, 113, 0.55);
+  background: rgba(47, 191, 113, 0.08);
 }
 
 .side-chip.side-false {
-  color: var(--magenta);
-  border-color: rgba(232, 121, 249, 0.45);
-  background: rgba(232, 121, 249, 0.07);
+  color: var(--red);
+  border-color: rgba(255, 87, 87, 0.55);
+  background: rgba(255, 87, 87, 0.07);
 }
 
-/* ---------------------------------------------------------------- bet card */
+/* ---------------------------------------------------------------- bet card (slip) */
 .bet-card {
   gap: 12px;
 }
 
+.bet-head {
+  align-items: flex-start;
+}
+
 .bet-id {
-  font-size: 0.78rem;
+  font-size: 0.72rem;
+  color: var(--muted-2);
+  letter-spacing: 0.1em;
 }
 
 .bet-claim {
-  font-size: 1.02rem;
+  font-size: 1.04rem;
   line-height: 1.45;
   overflow-wrap: anywhere;
 }
 
 .bet-evidence {
-  font-size: 0.75rem;
-  color: var(--accent);
+  font-size: 0.73rem;
+  color: var(--muted);
   overflow-wrap: anywhere;
   word-break: break-all;
 }
 
-.bet-sides {
-  justify-content: flex-start;
-  gap: 12px;
-  border-top: 1px solid var(--border-soft);
-  border-bottom: 1px solid var(--border-soft);
-  padding: 10px 0;
+/* the two-sided market strip */
+.market {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.018);
+  padding: 12px;
 }
 
-.side-group {
-  display: inline-flex;
+.market-col {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 11px 13px;
+  border-radius: 7px;
+  border: 1px solid transparent;
+  min-width: 0;
+}
+
+.market-col.mc-dim {
+  opacity: 0.55;
+}
+
+.market-col.mc-active.mc-true {
+  border-color: rgba(47, 191, 113, 0.45);
+  background: rgba(47, 191, 113, 0.06);
+}
+
+.market-col.mc-active.mc-false {
+  border-color: rgba(255, 87, 87, 0.45);
+  background: rgba(255, 87, 87, 0.06);
+}
+
+.market-vs {
+  align-self: center;
+  color: var(--muted-2);
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  letter-spacing: 0.1em;
+}
+
+.market-rowside {
+  display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 8px;
 }
 
-.bet-stake {
+.market-stake {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.mc-true .market-stake {
+  color: var(--green);
+}
+
+.mc-false .market-stake {
+  color: var(--red);
+}
+
+.market-party {
+  font-size: 0.78rem;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.market-wait {
+  font-size: 0.78rem;
+  color: var(--muted-2);
+  font-family: var(--font-mono);
+}
+
+.market-role {
+  font-size: 0.64rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-family: var(--font-mono);
+  color: var(--muted-2);
+}
+
+/* pot + countdown */
+.bet-pot {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 9px 0;
+}
+
+.bet-pot-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-family: var(--font-mono);
+  color: var(--muted-2);
+}
+
+.pot {
+  font-family: var(--font-mono);
+  font-weight: 700;
   font-size: 1.05rem;
+  color: var(--amber);
 }
 
-.bet-stake .muted {
-  font-size: 0.75rem;
-  font-family: var(--font-body);
-}
-
+/* outcome box */
 .bet-outcome {
-  border: 1px dashed var(--border);
-  border-radius: 12px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-sm);
   padding: 12px 14px;
   background: rgba(255, 255, 255, 0.02);
 }
@@ -129,22 +223,23 @@
   font-size: 0.85rem;
 }
 
-.bet-actions {
-  margin-top: auto;
-  justify-content: flex-end;
-}
-
-/* ---------------------------------------------------------------- countdown */
+/* countdown */
 .countdown {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--muted);
   font-family: var(--font-mono);
 }
 
 .countdown strong {
-  color: var(--accent);
+  color: var(--lime);
+  font-weight: 700;
 }
 
 .countdown.passed {
   color: var(--green);
+}
+
+.bet-actions {
+  margin-top: auto;
+  justify-content: flex-end;
 }

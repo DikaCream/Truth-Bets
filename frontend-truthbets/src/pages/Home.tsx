@@ -18,14 +18,9 @@ export default function Home() {
   return (
     <>
       <section className="hero">
-        <div className="orb-field" aria-hidden="true">
-          <div className="orb orb-1" />
-          <div className="orb orb-2" />
-          <div className="orb orb-3" />
-        </div>
         <div className="container">
           <span className="eyebrow">
-            <span className="pulse" /> GenLayer Intelligent Contract — StudioNet
+            <span className="pulse" /> GenLayer Intelligent Contract · StudioNet
           </span>
           <h1>
             Bets that read
@@ -52,13 +47,13 @@ export default function Home() {
               <div className="stat-label">Bets on-chain</div>
             </div>
             <div className="stat">
-              <div className="stat-value">
+              <div className="stat-value amber">
                 {config ? formatGen(config.escrow_locked) : "—"}
               </div>
               <div className="stat-label">Locked in escrow</div>
             </div>
             <div className="stat">
-              <div className="stat-value">3</div>
+              <div className="stat-value lime">3</div>
               <div className="stat-label">Possible verdicts</div>
             </div>
           </div>

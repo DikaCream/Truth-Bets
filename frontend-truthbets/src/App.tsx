@@ -22,7 +22,7 @@ function ScrollToTop() {
 export default function App() {
   return (
     <TruthBetsProvider>
-      <div className="bg-wash" aria-hidden="true" />
+      <div className="bg-grid" aria-hidden="true" />
       <ScrollToTop />
       <Navbar />
       <main className="main">

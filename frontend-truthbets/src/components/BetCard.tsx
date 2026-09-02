@@ -26,17 +26,18 @@ export default function BetCard({
 }: BetCardProps) {
   const isProposer = !!me && me.toLowerCase() === bet.proposer.toLowerCase();
   const isAcceptor = !!me && bet.acceptor && me.toLowerCase() === bet.acceptor.toLowerCase();
-  const canResolve =
-    bet.status === "LOCKED" && now >= bet.resolution_time;
-  const canCloseStale =
-    bet.status === "LOCKED" && now >= bet.stale_at;
+  const canResolve = bet.status === "LOCKED" && now >= bet.resolution_time;
+  const canCloseStale = bet.status === "LOCKED" && now >= bet.stale_at;
   const awaitingOpponent = bet.status === "OPEN" && !isProposer;
+  const pot = bet.acceptor ? bet.stake * 2n : bet.stake;
+
+  const proposerOnTrue = bet.proposer_side === "TRUE";
 
   return (
     <article className="card bet-card">
-      <div className="row">
+      <div className="row bet-head">
+        <span className="bet-id mono">BET #{bet.id}</span>
         <StatusBadge status={bet.status} />
-        <span className="muted mono bet-id">#{bet.id}</span>
       </div>
 
       <h3 className="bet-claim">{bet.claim}</h3>
@@ -53,34 +54,56 @@ export default function BetCard({
         </a>
       )}
 
-      <div className="row bet-sides">
-        <span className="side-group">
-          <SideChip side={bet.proposer_side} />
-          <span className="muted" style={{ fontSize: "0.82rem" }}>
-            {isProposer ? "you" : formatAddress(bet.proposer)}
+      {/* two-sided market strip */}
+      <div className="market" role="group" aria-label="Sides and stakes">
+        <div
+          className={`market-col mc-true ${
+            bet.acceptor || proposerOnTrue ? "mc-active" : "mc-dim"
+          }`}
+        >
+          <div className="market-rowside">
+            <SideChip side="TRUE" />
+            <span className="market-stake">{formatGen(bet.stake)}</span>
+          </div>
+          <span className="market-party">
+            {isProposer && proposerOnTrue ? "you" : formatAddress(bet.proposer)}
           </span>
-        </span>
-        <span className="muted">vs</span>
-        <span className="side-group">
+          <span className="market-role">proposer</span>
+        </div>
+        <span className="market-vs">vs</span>
+        <div
+          className={`market-col mc-false ${
+            bet.acceptor && !proposerOnTrue ? "mc-active" : "mc-dim"
+          }`}
+        >
           {bet.acceptor ? (
             <>
-              <SideChip side={bet.acceptor_side as "TRUE" | "FALSE"} />
-              <span className="muted" style={{ fontSize: "0.82rem" }}>
+              <div className="market-rowside">
+                <SideChip side={bet.acceptor_side as "TRUE" | "FALSE"} />
+                <span className="market-stake">{formatGen(bet.stake)}</span>
+              </div>
+              <span className="market-party">
                 {isAcceptor ? "you" : formatAddress(bet.acceptor)}
               </span>
+              <span className="market-role">acceptor</span>
             </>
           ) : (
-            <span className="muted" style={{ fontSize: "0.85rem" }}>
-              awaiting opponent…
-            </span>
+            <span className="market-wait">awaiting opponent…</span>
           )}
-        </span>
+        </div>
+      </div>
+
+      <div className="row bet-pot">
+        <span className="bet-pot-label">Pot</span>
+        <span className="pot">{formatGen(pot)}</span>
+        {bet.status === "OPEN" && !isProposer && (
+          <span className="muted" style={{ fontSize: "0.8rem" }}>
+            to win {formatGen(bet.stake * 2n)}
+          </span>
+        )}
       </div>
 
       <div className="row">
-        <span className="price bet-stake">
-          {formatGen(bet.stake)} <span className="muted">each side</span>
-        </span>
         {bet.status === "OPEN" && (
           <Countdown target={bet.resolution_time} prefix="Resolves in" />
         )}
@@ -89,6 +112,11 @@ export default function BetCard({
         )}
         {bet.status === "LOCKED" && canResolve && !canCloseStale && (
           <Countdown target={bet.stale_at} prefix="Stale in" passed="Stale window open" />
+        )}
+        {(bet.status === "RESOLVED" || bet.status === "REFUNDED") && (
+          <span className="bet-pot-label" style={{ textTransform: "none" }}>
+            closed {bet.verdict_reason ? "· see verdict" : ""}
+          </span>
         )}
       </div>
 

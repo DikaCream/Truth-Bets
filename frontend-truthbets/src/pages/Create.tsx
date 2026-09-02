@@ -131,20 +131,31 @@ export default function Create() {
           )}
         </label>
 
-        <label>
-          Your side
-          <select
-            value={side}
-            onChange={(e) => setSide(e.target.value as "TRUE" | "FALSE")}
+        <div className="side-picker" role="radiogroup" aria-label="Your side">
+          <button
+            type="button"
+            className={`side-option side-opt-true ${side === "TRUE" ? "selected" : ""}`}
+            aria-pressed={side === "TRUE"}
+            onClick={() => setSide("TRUE")}
             aria-invalid={!!fieldErrors.side || undefined}
           >
-            <option value="TRUE">TRUE — the claim is true</option>
-            <option value="FALSE">FALSE — the claim is false</option>
-          </select>
-          {fieldErrors.side && (
-            <span className="field-error">{fieldErrors.side}</span>
-          )}
-        </label>
+            <span className="side-sign">▲ TRUE</span>
+            <span>the claim is true</span>
+          </button>
+          <button
+            type="button"
+            className={`side-option side-opt-false ${side === "FALSE" ? "selected" : ""}`}
+            aria-pressed={side === "FALSE"}
+            onClick={() => setSide("FALSE")}
+            aria-invalid={!!fieldErrors.side || undefined}
+          >
+            <span className="side-sign">▼ FALSE</span>
+            <span>the claim is false</span>
+          </button>
+        </div>
+        {fieldErrors.side && (
+          <span className="field-error">{fieldErrors.side}</span>
+        )}
 
         <label>
           Stake (GEN, sent with your bet)

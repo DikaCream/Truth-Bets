@@ -10,9 +10,9 @@ validators judge the claim (with live web access and the optional evidence URL)
 and rule TRUE, FALSE or UNCLEAR. The side that matches the verdict wins both
 stakes; an UNCLEAR verdict refunds both parties.
 
-Compared to the AI Marketplace this keeps exactly one non-deterministic step
-(resolution) and one escrow shape (two identical stakes), so the whole state
-machine is: OPEN -> LOCKED -> RESOLVED | REFUNDED | CANCELLED.
+The contract keeps exactly one non-deterministic step (resolution) and one
+escrow shape (two identical stakes), so the whole state machine is:
+OPEN -> LOCKED -> RESOLVED | REFUNDED | CANCELLED.
 
 ESCROW INVARIANT (must hold after every method, on every path):
     escrow_locked == sum over every bet in {OPEN, LOCKED} of held funds,
@@ -45,7 +45,7 @@ SIDES = (TRUE, FALSE)
 SECONDS_PER_DAY = 86400
 # A failed resolution (unusable LLM output) keeps the bet LOCKED; re-runs cost
 # every validator an LLM call plus an outbound fetch, so they are throttled and
-# capped, mirroring the marketplace's adjudication policy.
+# capped to a bounded number of attempts per bet.
 RESOLUTION_COOLDOWN_SECONDS = 300
 MAX_RESOLUTION_ATTEMPTS = 5
 # If consensus can never produce a verdict, anyone may close the bet after this
@@ -342,10 +342,20 @@ class TruthBets(gl.Contract):
 
     @gl.public.write.payable
     def accept_bet(self, bet_id: u256) -> None:
-        """Acceptor matches the stake and takes the opposite side."""
+        """Acceptor matches the stake and takes the opposite side.
+
+        Rejects once resolution time has arrived: a bet past its deadline can
+        no longer be funded by a second party, so an acceptance can never be
+        immediately resolved. The proposer's only way out then is cancel_bet.
+        """
         b = self._bet_or_revert(int(bet_id))
         if b.status != OPEN:
             raise gl.vm.UserError("bet is not open for acceptance")
+        now = self._now()
+        if now >= int(b.resolution_time):
+            raise gl.vm.UserError(
+                "bet is past its resolution time and can no longer be accepted"
+            )
         acceptor = gl.message.sender_address
         if b.proposer == acceptor:
             raise gl.vm.UserError("a proposer cannot accept their own bet")
@@ -353,7 +363,6 @@ class TruthBets(gl.Contract):
         stake_int = int(b.stake)
         if value != stake_int:
             raise gl.vm.UserError("exact stake must be sent")
-        now = self._now()
         b.acceptor = acceptor
         b.accepted = True
         b.accepted_at = u256(now)

@@ -198,6 +198,42 @@ def test_accept_twice_reverts(direct_vm, direct_deploy, direct_alice, direct_bob
     direct_vm.value = 0
 
 
+def test_accept_at_or_after_resolution_time_reverts(
+    direct_vm, direct_deploy, direct_alice, direct_bob
+):
+    """A stale OPEN bet is frozen at resolution time: it can no longer be
+    accepted, so it can never be accepted and immediately resolved. The
+    proposer's only way out is cancel_bet (covered elsewhere)."""
+    contract = direct_deploy("contracts/truth_bets.py")
+    bid = create_bet(contract, direct_vm, direct_alice, stake=100)
+
+    # Exactly at resolution time, acceptance is already too late.
+    set_time(RESOLUTION_ISO)
+    direct_vm.sender = direct_bob
+    direct_vm.value = 100
+    with direct_vm.expect_revert("past its resolution time"):
+        contract.accept_bet(bid)
+    direct_vm.value = 0
+
+    # Well after resolution time, still frozen and still OPEN.
+    set_time("2030-02-01T00:00:00Z")
+    direct_vm.sender = direct_bob
+    direct_vm.value = 100
+    with direct_vm.expect_revert("past its resolution time"):
+        contract.accept_bet(bid)
+    direct_vm.value = 0
+
+    b = contract.get_bet(bid)
+    assert b["status"] == "OPEN"
+    assert b["acceptor"] == ""  # never matched
+    # Because it was never funded by a second party, resolution is blocked too:
+    # there is no stale accept -> immediate resolve path.
+    mock_resolution(direct_vm)
+    with direct_vm.expect_revert("bet is not funded"):
+        contract.resolve_bet(bid)
+    assert contract.get_config()["escrow_locked"] == 100
+
+
 # ---------------------------------------------------------------- cancellation
 def test_cancel_open_bet_refunds_proposer(direct_vm, direct_deploy, direct_alice):
     contract = direct_deploy("contracts/truth_bets.py")
@@ -402,3 +438,40 @@ def test_views(direct_vm, direct_deploy, direct_alice, direct_bob):
     # Pagination caps at 50.
     assert contract.list_bets(1, 10) == []
     assert contract.list_bets(0, 0) == []
+
+
+def test_personal_bet_lists_are_address_scoped(
+    direct_vm, direct_deploy, direct_alice, direct_bob, direct_charlie
+):
+    """list_proposer_bets / list_acceptor_bets key on the exact typed Address.
+
+    Each party only ever sees the bets they took part in: the proposer's list
+    holds their own bets, each acceptor's list holds the bet they matched, and
+    a stranger's Address resolves to an empty list on both sides.
+    """
+    contract = direct_deploy("contracts/truth_bets.py")
+    b1 = funded_bet(contract, direct_vm, direct_alice, direct_bob, stake=100)
+
+    # Alice proposes a second bet; Charlie accepts it.
+    direct_vm.sender = direct_alice
+    direct_vm.value = 50
+    b2 = int(contract.create_bet(BET_CLAIM, "", RESOLUTION_TS, 50, "FALSE"))
+    direct_vm.value = 0
+    direct_vm.sender = direct_charlie
+    direct_vm.value = 50
+    contract.accept_bet(b2)
+    direct_vm.value = 0
+
+    # Proposer list: both bets, only for Alice's typed Address.
+    assert [b["id"] for b in contract.list_proposer_bets(addr(direct_alice), 0, 10)] == [b1, b2]
+    assert contract.list_proposer_bets(addr(direct_bob), 0, 10) == []
+    assert contract.list_proposer_bets(addr(direct_charlie), 0, 10) == []
+
+    # Acceptor lists: each acceptor sees exactly the bet they matched.
+    assert [b["id"] for b in contract.list_acceptor_bets(addr(direct_bob), 0, 10)] == [b1]
+    assert [b["id"] for b in contract.list_acceptor_bets(addr(direct_charlie), 0, 10)] == [b2]
+    assert contract.list_acceptor_bets(addr(direct_alice), 0, 10) == []
+
+    # Pagination applies on personal lists too (same shape as list_bets).
+    assert [b["id"] for b in contract.list_proposer_bets(addr(direct_alice), 1, 10)] == [b2]
+    assert contract.list_acceptor_bets(addr(direct_bob), 1, 10) == []

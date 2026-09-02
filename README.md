@@ -14,7 +14,8 @@ the validators write a verdict. In order:
 
 1. The proposer writes a claim, picks TRUE or FALSE, sets a resolution time,
    and sends a stake.
-2. An acceptor matches that stake and automatically gets the other side.
+2. An acceptor matches that stake before the resolution time and automatically
+gets the other side.
 3. Anyone can call `resolve_bet` once the resolution time has passed. The
    validators read the evidence and agree on a verdict; the winning side
    receives `2 × stake`.

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Truth Bets verification loop — contract only; KAVI files are never touched.
+# Truth Bets verification loop — contract, tests, frontend and integration.
 #
 # Usage:
 #   ./scripts/verify-truthbets.sh                # lint + direct tests

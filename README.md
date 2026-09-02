@@ -1,65 +1,54 @@
 # Truth Bets
 
-AI-judged binary bets on [GenLayer](https://genlayer.com)'s intelligent network.
+A betting dapp on [GenLayer](https://genlayer.com)'s StudioNet. Two wallets
+put GEN on opposite sides of a claim; when the deadline hits, the network's
+validators check the facts and settle it.
 
-Two parties deposit GEN on opposite sides of a factual claim. At resolution
-time, GenLayer's AI validators fetch public evidence, judge the claim and reach
-consensus on **TRUE / FALSE / UNCLEAR**. The winning side takes both stakes;
-UNCLEAR refunds everyone back their stake.
+The verdict is TRUE, FALSE, or UNCLEAR. Match the verdict and you take the
+pot. UNCLEAR sends both stakes back.
 
-## How it works
+## How a bet goes
 
-```
-OPEN ──accept──> LOCKED ──resolve──> RESOLVED   (winner takes 2× stake)
-  │                       │
-  └──cancel──> CANCELLED  └──UNCLEAR──> REFUNDED  (stakes returned)
-                          └──stale 7 days──> REFUNDED  (fail closed)
-```
+The proposer funds a claim, an acceptor matches it, the deadline passes, and
+the validators write a verdict. In order:
 
-1. **Proposer** creates a bet: claim + optional evidence URL + resolution
-   time + stake, and picks the TRUE or FALSE side.
-2. **Acceptor** matches the stake and automatically takes the opposite side.
-3. Anyone calls `resolve_bet` once resolution time arrives. Validators judge
-   the claim with live web access (the evidence URL is fetched SSRF-safely)
-   and reach an equivalence-principle consensus. The winning side receives
-   `2 × stake`.
+1. The proposer writes a claim, picks TRUE or FALSE, sets a resolution time,
+   and sends a stake.
+2. An acceptor matches that stake and automatically gets the other side.
+3. Anyone can call `resolve_bet` once the resolution time has passed. The
+   validators read the evidence and agree on a verdict; the winning side
+   receives `2 × stake`.
 
-One AI call per bet, one escrow shape, no moderation, no disputes.
+The contract runs one AI call per bet and holds one escrow shape. No
+moderation, no dispute system.
 
-## Deployed contract
+## Live state
 
-| Network | Address |
-|---|---|
-| StudioNet | `0x74e2b3B85090A3674A2f8bD50C76341371a297f0` |
+Contract on StudioNet: `0x74e2b3B85090A3674A2f8bD50C76341371a297f0`
 
-Verified on-chain at deploy time: 5/5 validators **AGREE**, status ACCEPTED
-(tx `0xb1b0ca5cdd9e12c448718706f5e528cf744f8770a2b55bd026e26b655c3c33c8`).
+It was deployed with 5/5 validator agreement in tx
+`0xb1b0ca5cdd9e12c448718706f5e528cf744f8770a2b55bd026e26b655c3c33c8`.
 
-## Live app
-
-The production frontend is deployed on Vercel and wired to the live StudioNet
-contract — SPA routes (`/bets`, `/create`), wallet connection (StudioNet,
-chain id 61999) and the full create → accept → resolve flow run against the
-on-chain contract; no mock data.
-
-**https://truth-bets.vercel.app**
+The frontend lives at https://truth-bets.vercel.app and talks directly to that
+contract (chain id 61999). As of September 2026 it has two open bets on it,
+both staked at 0.001 GEN, so the board is not empty when you open the site.
 
 ## Repository layout
 
 ```
-contracts/truth_bets.py        # the TruthBets contract (single file)
-tests/direct/                  # fast deterministic tests (mocked web + LLM)
-tests/integration/             # StudioNet consensus tests (real fetch + LLM)
-frontend-truthbets/            # Vite + React dapp UI (list, create, accept, resolve)
-scripts/setup.sh               # one-shot env bootstrap for flaky networks
-scripts/verify-truthbets.sh    # lint + tests (+ optional frontend / integration)
+contracts/truth_bets.py        the contract, one file
+tests/direct/                  local tests with mocked web + LLM
+tests/integration/             StudioNet tests against real consensus
+frontend-truthbets/            Vite + React app
+scripts/setup.sh               environment bootstrap
+scripts/verify-truthbets.sh    lint + tests in one command
 ```
 
 ## Quickstart
 
 ```bash
 ./scripts/setup.sh               # Python venv + deps (official PyPI via pip.conf)
-./scripts/setup.sh --frontend    # + install frontend deps
+./scripts/setup.sh --frontend    # also install frontend deps
 source .venv/bin/activate
 ```
 
@@ -67,31 +56,30 @@ source .venv/bin/activate
 
 ```bash
 cd frontend-truthbets
-cp .env.example .env       # optional — config.ts falls back to the live contract
+cp .env.example .env       # optional: config.ts falls back to the live contract
 npm run dev                # http://localhost:5173
 ```
 
-Connect a GenLayer wallet on StudioNet (chain id **61999**) with some GEN to
-create and accept bets. The UI supports: browse all bets, create a bet, accept
-an open bet, resolve when the time comes, cancel your open bet, and close a
-stale bet.
+Connect a GenLayer wallet on StudioNet (chain id 61999), then you can create a
+bet, take an OPEN one, cancel your own open bet, resolve after the deadline,
+or close a stale one. Wallet connect is MetaMask-compatible.
 
 ## Tests
 
 ```bash
 ./scripts/verify-truthbets.sh                # genvm-lint + direct tests
-./scripts/verify-truthbets.sh --frontend     # + frontend typecheck & build
+./scripts/verify-truthbets.sh --frontend     # + typecheck & build
 ./scripts/verify-truthbets.sh --integration  # + StudioNet consensus tests (~5 min)
 ```
 
-Direct tests mock the validator's web fetch and LLM, covering the full state
-machine (cancel, UNCLEAR refunds, stale close, retry throttling, fail-closed
-paths). Integration tests exercise the real consensus pipeline on StudioNet.
+The direct tests mock the validator's web fetch and LLM and cover the full
+state machine. The integration tests run the real consensus pipeline on
+StudioNet.
 
 ## Redeploying the contract
 
-Requires the `genlayer` CLI (`npm i -g genlayer`), an account keystore and the
-StudioNet network profile:
+You need the `genlayer` CLI (`npm i -g genlayer`), a keystore, and the
+StudioNet profile:
 
 ```bash
 genlayer network set studionet
@@ -99,26 +87,23 @@ genlayer account create           # or import an existing keystore
 genlayer deploy contracts/truth_bets.py
 ```
 
-Point the frontend at the new address via `VITE_CONTRACT_ADDRESS`.
+Then point the frontend at the new address via `VITE_CONTRACT_ADDRESS`.
 
-## Security & failure modes
+## What the contract refuses to do
 
-- **SSRF-safe fetch** — evidence URLs must be public, default-port, https;
-  localhost, private/reserved IP ranges and `.local`/`.internal`-style hosts
-  are rejected in every spelling.
-- **Prompt-injection resistant** — claim/evidence text is framed as data to
-  judge and structural markers (`<<<`, fences, BEGIN/END) are neutralized
-  before being placed in the prompt.
-- **Equivalence principle** — consensus compares verdict strings byte-exactly
-  (TRUE/FALSE/UNCLEAR); reasoning text may differ between validators.
-- **Fail closed** — unparseable verdicts or disagreement never pay out a guess:
-  the bet stays LOCKED, retries are throttled (5-min cooldown, max 5 attempts)
-  and after 7 days past resolution anyone can close it stale, refunding both
-  sides.
-- **Escrow invariant** — `escrow_locked` equals the funds held in OPEN/LOCKED
-  bets and is tracked incrementally on every transition.
+- Evidence URLs must be public https on a standard port. Localhost, private
+  IPs, and `.local`/`.internal` hosts are rejected in any spelling, because
+  the validators fetch these URLs themselves.
+- Claim and evidence text is treated as data. Prompt fences and markers are
+  scrubbed before the text reaches the model.
+- Verdicts compare byte-for-byte; only the reasoning text can differ.
+- An unusable verdict keeps the bet LOCKED for five minutes, capped at five
+  attempts. Seven days after the deadline, anyone can close the bet and both
+  sides get their stake back.
+- `escrow_locked` is updated on every state change, so the contract never
+  loops over bets just to count its own holdings.
 
 ## Disclaimer
 
-Experimental software — use at your own risk. Bets are judged by GenLayer's
-validator consensus, not by the authors of this repository.
+Experimental code, use at your own risk. The validators, not the repo
+authors, decide every bet.

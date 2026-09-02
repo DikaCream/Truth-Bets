@@ -9,9 +9,9 @@ export default function Footer() {
         <div>
           <Logo />
           <p className="muted" style={{ maxWidth: 360, marginTop: 12 }}>
-            Wager GEN on factual claims. GenLayer's AI validators read the
-            evidence, rule TRUE / FALSE / UNCLEAR, and the winner takes both
-            stakes.
+            Two wallets back opposite sides of a claim. GenLayer's validators
+            check the evidence and pay the winner; when the verdict is UNCLEAR,
+            both stakes go back.
           </p>
         </div>
         <div className="footer-col">

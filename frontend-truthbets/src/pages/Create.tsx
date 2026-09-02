@@ -96,26 +96,26 @@ export default function Create() {
       <div className="page-head">
         <h1>Create a bet</h1>
         <p className="muted">
-          You propose a factual claim and pick your side. Anyone can accept by
-          matching your stake on the opposite side. At resolution time,
-          GenLayer's AI validators fetch the evidence and rule{" "}
-          <strong>TRUE</strong>, <strong>FALSE</strong> or{" "}
-          <strong>UNCLEAR</strong> — the winning side takes both stakes, and an
-          unclear verdict refunds everyone.
+          State a claim, pick your side, and send a stake. Anyone can match
+          the stake and take the opposite side. After the deadline, the
+          validators look at the evidence and rule <strong>TRUE</strong>,{" "}
+          <strong>FALSE</strong>, or <strong>UNCLEAR</strong>: if your side
+          matches the verdict you take both stakes, and UNCLEAR refunds both
+          wallets.
         </p>
       </div>
 
       {submitError && <div className="error-banner">{submitError}</div>}
       {!wallet.address && (
         <div className="notice">
-          Connect your wallet to fund a bet. StudioNet is gasless — bets only
-          need the GEN stake.
+          Connect your wallet to fund a bet. StudioNet is gasless: you only
+          need the stake.
         </div>
       )}
 
       <form className="form panel" onSubmit={onSubmit} noValidate>
         <label>
-          Claim (what the validators will judge)
+          Claim (validators decide if it's true)
           <textarea
             rows={4}
             value={claim}
@@ -186,7 +186,7 @@ export default function Create() {
         </label>
 
         <label>
-          Evidence URL (optional, must be public https)
+          Evidence URL (optional, public https)
           <input
             type="url"
             value={evidenceUrl}

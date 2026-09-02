@@ -97,9 +97,9 @@ export default function Bets() {
       <div className="page-head">
         <h1>All bets</h1>
         <p className="muted">
-          Every open wager on-chain. Accept any <strong>OPEN</strong> bet by
-          matching its stake; anyone can trigger <strong>resolve</strong> once
-          the resolution time arrives.
+          The wagers on this contract. Take an <strong>OPEN</strong> bet by
+          matching its stake; after the deadline, anyone can trigger{" "}
+          <strong>resolve</strong>.
         </p>
       </div>
 

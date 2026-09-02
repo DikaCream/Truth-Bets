@@ -20,18 +20,18 @@ export default function Home() {
       <section className="hero">
         <div className="container">
           <span className="eyebrow">
-            <span className="pulse" /> GenLayer Intelligent Contract · StudioNet
+            <span className="pulse" /> Live on GenLayer StudioNet
           </span>
           <h1>
-            Bets that read
+            Back a claim.
             <br />
-            <span className="grad">what they resolve.</span>
+            <span className="grad">The network checks the facts.</span>
           </h1>
           <p className="lede">
-            Two parties deposit GEN on opposite sides of a factual claim. At
-            resolution time, GenLayer&apos;s AI validators fetch the evidence and
-            rule TRUE, FALSE or UNCLEAR. The winning side takes both stakes; an
-            unclear verdict refunds everyone.
+            Two wallets bet GEN on opposite sides of a claim. When the deadline
+            hits, GenLayer's validators look at the evidence and rule TRUE,
+            FALSE, or UNCLEAR. Your side matches the verdict and you take the
+            pot; an UNCLEAR call sends both stakes back.
           </p>
           <div className="hero-cta">
             <Link to="/bets" className="primary">
@@ -70,27 +70,26 @@ export default function Home() {
               <div className="step-n">STEP 01</div>
               <h3>Fund both sides</h3>
               <p>
-                The proposer picks a claim and their side (TRUE or FALSE), then
-                deposits a stake. An acceptor matches the stake on the opposite
-                side. Both stakes sit in escrow.
+                The proposer writes a claim, picks TRUE or FALSE, and sends a
+                stake. An acceptor matches that stake and takes the other side.
+                Both amounts sit in escrow until the deadline.
               </p>
             </div>
             <div className="step">
               <div className="step-n">STEP 02</div>
               <h3>Resolution time</h3>
               <p>
-                Once the resolution time arrives, anyone can trigger
-                resolution. Validators fetch the optional evidence URL and read
-                public sources.
+                When the resolution time arrives, anyone can trigger it.
+                Validators fetch the evidence URL and read public sources.
               </p>
             </div>
             <div className="step">
               <div className="step-n">STEP 03</div>
-              <h3>AI validators rule</h3>
+              <h3>Validators rule</h3>
               <p>
-                Consensus returns TRUE or FALSE — the matching side takes both
-                stakes. UNCLEAR refunds both parties. If consensus never
-                resolves, the bet goes stale and everyone is refunded.
+                Consensus comes back TRUE or FALSE and the matching side takes
+                the pot. UNCLEAR refunds both parties. If consensus never
+                decides, the bet goes stale and everyone gets their stake back.
               </p>
             </div>
           </div>
@@ -100,15 +99,16 @@ export default function Home() {
       <section className="section alt">
         <div className="container">
           <h2 className="section-title">
-            One AI call per bet — <span className="accent">no moderation, no disputes</span>
+            One AI call per bet.{" "}
+            <span className="accent">No moderation. No disputes.</span>
           </h2>
           <p className="muted" style={{ maxWidth: 720, marginBottom: 26 }}>
-            Truth Bets is deliberately minimal: a single non-deterministic step
-            (resolution) and one escrow shape. The whole state machine is{" "}
-            <code>OPEN → LOCKED → RESOLVED | REFUNDED | CANCELLED</code>.
-            Unusable verdicts fail closed (the bet stays locked for a retry),
-            and a stale bet refunds both sides instead of letting anyone win a
-            bet the network could not judge.
+            Truth Bets stays small on purpose: a single non-deterministic step
+            at resolution and one escrow shape. The whole state machine is{" "}
+            <code>OPEN → LOCKED → RESOLVED | REFUNDED | CANCELLED</code>. A
+            verdict nobody can parse leaves the bet LOCKED for a retry, and a
+            bet nobody resolves within seven days refunds both sides instead of
+            handing the pot to someone.
           </p>
           <div className="cta-band">
             <Link to="/create" className="primary">

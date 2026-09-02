@@ -169,7 +169,7 @@ export default function BetCard({
             disabled={busy}
             onClick={() => onAccept(bet)}
           >
-            Accept — pay {formatGen(bet.stake)}
+            Accept and pay {formatGen(bet.stake)}
           </button>
         )}
         {awaitingOpponent && !me && (
@@ -184,7 +184,7 @@ export default function BetCard({
               disabled={busy}
               onClick={() => onResolve(bet)}
             >
-              Resolve — validators judge
+              Resolve (validators check it)
             </button>
             {canCloseStale && (
               <button

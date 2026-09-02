@@ -1,0 +1,25 @@
+# Secrets & env (copy from .env.example, never commit real values)
+.env
+.env.local
+
+# Python
+.venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+*.pyo
+*.pyd
+
+# Node / frontend build output
+node_modules/
+/frontend-truthbets/dist/
+*.tsbuildinfo
+.npm-cache/
+
+# gltest generated artifacts
+artifacts/
+
+# Editor
+.vscode/
+.idea
+.DS_Store

@@ -1,0 +1,150 @@
+/* Truth Bets specific styles — layered on top of the shared design system. */
+
+/* ---------------------------------------------------------------- status badges */
+.badge.status-open {
+  color: var(--warn);
+  border-color: rgba(251, 191, 36, 0.45);
+  background: rgba(251, 191, 36, 0.08);
+}
+
+.badge.status-locked {
+  color: var(--accent);
+  border-color: rgba(34, 211, 238, 0.45);
+  background: rgba(34, 211, 238, 0.08);
+}
+
+.badge.status-resolved {
+  color: var(--green);
+  border-color: rgba(52, 211, 153, 0.5);
+  background: rgba(52, 211, 153, 0.1);
+}
+
+.badge.status-refunded,
+.badge.status-cancelled {
+  color: var(--muted);
+  border-color: var(--border-soft);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* ---------------------------------------------------------------- verdict badges */
+.badge.verdict-true {
+  color: var(--green);
+  border-color: rgba(52, 211, 153, 0.5);
+  background: rgba(52, 211, 153, 0.1);
+  font-weight: 800;
+}
+
+.badge.verdict-false {
+  color: var(--magenta);
+  border-color: rgba(232, 121, 249, 0.45);
+  background: rgba(232, 121, 249, 0.08);
+  font-weight: 800;
+}
+
+.badge.verdict-unclear {
+  color: var(--warn);
+  border-color: rgba(251, 191, 36, 0.45);
+  background: rgba(251, 191, 36, 0.08);
+  font-weight: 800;
+}
+
+/* ---------------------------------------------------------------- side chips */
+.side-chip {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 2px 9px;
+  border-radius: 999px;
+  border: 1px solid;
+}
+
+.side-chip.side-true {
+  color: var(--green);
+  border-color: rgba(52, 211, 153, 0.5);
+  background: rgba(52, 211, 153, 0.08);
+}
+
+.side-chip.side-false {
+  color: var(--magenta);
+  border-color: rgba(232, 121, 249, 0.45);
+  background: rgba(232, 121, 249, 0.07);
+}
+
+/* ---------------------------------------------------------------- bet card */
+.bet-card {
+  gap: 12px;
+}
+
+.bet-id {
+  font-size: 0.78rem;
+}
+
+.bet-claim {
+  font-size: 1.02rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.bet-evidence {
+  font-size: 0.75rem;
+  color: var(--accent);
+  overflow-wrap: anywhere;
+  word-break: break-all;
+}
+
+.bet-sides {
+  justify-content: flex-start;
+  gap: 12px;
+  border-top: 1px solid var(--border-soft);
+  border-bottom: 1px solid var(--border-soft);
+  padding: 10px 0;
+}
+
+.side-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bet-stake {
+  font-size: 1.05rem;
+}
+
+.bet-stake .muted {
+  font-size: 0.75rem;
+  font-family: var(--font-body);
+}
+
+.bet-outcome {
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.bet-reason {
+  margin: 8px 0 0;
+  font-size: 0.85rem;
+}
+
+.bet-actions {
+  margin-top: auto;
+  justify-content: flex-end;
+}
+
+/* ---------------------------------------------------------------- countdown */
+.countdown {
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-family: var(--font-mono);
+}
+
+.countdown strong {
+  color: var(--accent);
+}
+
+.countdown.passed {
+  color: var(--green);
+}

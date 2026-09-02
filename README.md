@@ -35,6 +35,15 @@ One AI call per bet, one escrow shape, no moderation, no disputes.
 Verified on-chain at deploy time: 5/5 validators **AGREE**, status ACCEPTED
 (tx `0xb1b0ca5cdd9e12c448718706f5e528cf744f8770a2b55bd026e26b655c3c33c8`).
 
+## Live app
+
+The production frontend is deployed on Vercel and wired to the live StudioNet
+contract — SPA routes (`/bets`, `/create`), wallet connection (StudioNet,
+chain id 61999) and the full create → accept → resolve flow run against the
+on-chain contract; no mock data.
+
+**https://truth-bets.vercel.app**
+
 ## Repository layout
 
 ```

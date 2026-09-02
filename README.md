@@ -25,10 +25,10 @@ moderation, no dispute system.
 
 ## Live state
 
-Contract on StudioNet: `0x74e2b3B85090A3674A2f8bD50C76341371a297f0`
+Contract on StudioNet: `0x722548962474547EB9B4Da58be0DD919628faA82`
 
-It was deployed with 5/5 validator agreement in tx
-`0xb1b0ca5cdd9e12c448718706f5e528cf744f8770a2b55bd026e26b655c3c33c8`.
+It was deployed with 5/5 validator agreement; the deployment and every bet
+transaction are recorded on the network.
 
 The frontend lives at https://truth-bets.vercel.app and talks directly to that
 contract (chain id 61999). As of September 2026 it has two open bets on it,

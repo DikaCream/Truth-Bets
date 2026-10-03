@@ -26,7 +26,7 @@ export const RPC_URL = env("VITE_GENLAYER_RPC_URL", "https://studio.genlayer.com
 
 /** Chain id of studionet, used to add/switch the network in the wallet. */
 export const STUDIONET_CHAIN_ID = 61999;
-export const STUDIONET_CHAIN_ID_HEX = "0xF23F";
+export const STUDIONET_CHAIN_ID_HEX = "0xF22F";
 
 // Contract constants surfaced by get_config, used for form hints.
 export const MAX_STAKE_GEN = 1000;

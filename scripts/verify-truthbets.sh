@@ -40,6 +40,8 @@ echo "==> direct tests (tests/direct/test_truth_bets.py)"
 if [ "$DO_FRONTEND" -eq 1 ]; then
     echo "==> frontend-truthbets typecheck"
     (cd frontend-truthbets && npm run typecheck)
+    echo "==> frontend-truthbets regression tests (vitest)"
+    (cd frontend-truthbets && npm test)
     echo "==> frontend-truthbets build"
     (cd frontend-truthbets && npm run build)
 fi
